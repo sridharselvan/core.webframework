@@ -74,6 +74,11 @@ def modify_client_config():
     form_data = decode_form_data(request.forms)
     return update_client_config(form_data)
 
+@app_route('/logoutuser')
+@common_route
+def logout_user():
+    return True
+
 @app_route('/<filename:re:.*\.(tpl|html)>')
 def views(filename):
     return bottle.static_file(filename, root=STATIC_VIEW_FILE_PATH)
