@@ -28,7 +28,7 @@ from core.backend.constants import (
 from core.backend.config import update_client_config, view_client_config
 from core.scheduler.web import save_scheduler_config, search_scheduled_job
 from core.backend.utils.butils import decode_form_data
-from core.backend.utils.core_utils import common_route
+from core.backend.utils.core_utils import common_route, AutoSession
 
 from core.backend.api.user import authenticate_user, create_user
 # ----------- END: In-App Imports ---------- #
@@ -55,42 +55,55 @@ def sorry_page(page_name):
     return views("under_construction.html")
 
 @app_route('/loginvalidation', method='POST')
-@common_route
-def on_login():
-    return authenticate_user()
+@common_route()
+def on_login(session, *args, **kwargs):
+
+    form_data = decode_form_data(request.forms)
+
+    if form_data:
+        kwargs['form_data'] = form_data
+
+    return authenticate_user(session, *args, **kwargs)
 
 @app_route('/createUser', method='POST')
-def on_create_user():
-    return create_user()
+def on_create_user(*args, **kwargs):
+
+    with AutoSession() as auto_session:
+        form_data = decode_form_data(request.forms)
+
+        if form_data:
+            kwargs['form_data'] = form_data
+
+        return create_user(auto_session, *args, **kwargs)
 
 @app_route('/viewclientconfig')
-@common_route
+@common_route()
 def show_client_config():
     return view_client_config()
 
 
 @app_route('/modifyclientconfig', method='POST')
-@common_route
+@common_route()
 def modify_client_config():
     form_data = decode_form_data(request.forms)
     return update_client_config(form_data)
 
 @app_route('/logoutuser')
-@common_route
+@common_route()
 def logout_user():
     return True
 
 @app_route('/saveschedulerconfig', method='POST')
-@common_route
-def on_scheduler_config():
+@common_route(use_transaction=True)
+def on_scheduler_config(session, *args, **kwargs):
     form_data = decode_form_data(request.forms)
-    return save_scheduler_config(form_data)
+    return save_scheduler_config(session, form_data)
 
 @app_route('/searchscheduledjob', method='POST')
-@common_route
-def on_search_job():
+@common_route(use_transaction=True)
+def on_search_job(session, *args, **kwargs):
     form_data = decode_form_data(request.forms)
-    return search_scheduled_job(form_data)
+    return search_scheduled_job(session, form_data)
 
 @app_route('/<filename:re:.*\.(tpl|html)>')
 def views(filename):
@@ -112,7 +125,7 @@ def images(filename):
 def main():
     session_opts = {
         'session.type': 'file',
-        'session.cookie_expires': 300,
+        'session.cookie_expires': 60 * 10,
         'session.data_dir': './data',
         'session.auto': True
     }
