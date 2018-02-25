@@ -25,7 +25,8 @@ from core.backend.constants import (
     STATIC_JS_FILE_PATH, STATIC_CSS_FILE_PATH, STATIC_VIEW_FILE_PATH, STATIC_IMAGE_FILE_PATH
 )
 
-from core.backend.config import update_client_config, view_client_config, save_scheduler_config
+from core.backend.config import update_client_config, view_client_config
+from core.scheduler.web import save_scheduler_config, search_scheduled_job
 from core.backend.utils.butils import decode_form_data
 from core.backend.utils.core_utils import common_route
 
@@ -84,6 +85,12 @@ def logout_user():
 def on_scheduler_config():
     form_data = decode_form_data(request.forms)
     return save_scheduler_config(form_data)
+
+@app_route('/searchscheduledjob', method='POST')
+@common_route
+def on_search_job():
+    form_data = decode_form_data(request.forms)
+    return search_scheduled_job(form_data)
 
 @app_route('/<filename:re:.*\.(tpl|html)>')
 def views(filename):
