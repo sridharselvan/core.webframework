@@ -28,7 +28,7 @@ from core.backend.constants import (
 from core.backend.config import update_client_config, view_client_config
 from core.scheduler.web import (
     save_scheduler_config, search_scheduled_job,
-    deactivate_scheduled_job
+    deactivate_scheduled_job, update_scheduled_job
 )
 from core.backend.utils.butils import decode_form_data
 from core.backend.utils.core_utils import common_route, AutoSession
@@ -113,6 +113,12 @@ def on_search_job(session, *args, **kwargs):
 def on_deactivate_job(session, *args, **kwargs):
     form_data = decode_form_data(request.forms)
     return deactivate_scheduled_job(session, form_data)
+
+@app_route('/updateschedulerconfig', method='POST')
+@common_route(use_transaction=True)
+def on_update_job(session, *args, **kwargs):
+    form_data = decode_form_data(request.forms)
+    return update_scheduled_job(session, form_data)
 
 @app_route('/<filename:re:.*\.(tpl|html)>')
 def views(filename):
