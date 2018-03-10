@@ -139,6 +139,7 @@ def images(filename):
 
 @app_route('/<filename:re:.*\.(eot|svg|ttf|woff|woff2)>')
 def fonts(filename):
+    filename = filename.split('/')[-1]
     return bottle.static_file(filename, root=STATIC_FONT_FILE_PATH)
 
 
