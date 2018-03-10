@@ -22,7 +22,8 @@ from bottle import request
 
 # ----------- START: In-App Imports ---------- #
 from core.backend.constants import (
-    STATIC_JS_FILE_PATH, STATIC_CSS_FILE_PATH, STATIC_VIEW_FILE_PATH, STATIC_IMAGE_FILE_PATH
+    STATIC_JS_FILE_PATH, STATIC_CSS_FILE_PATH, STATIC_VIEW_FILE_PATH, STATIC_IMAGE_FILE_PATH,
+    STATIC_FONT_FILE_PATH
 )
 
 from core.backend.config import update_client_config, view_client_config
@@ -135,6 +136,10 @@ def stylesheets(filename):
 @app_route('/<filename:re:.*\.(jpg|jpeg|png|gif|ico)>')
 def images(filename):
     return bottle.static_file(filename, root=STATIC_IMAGE_FILE_PATH)
+
+@app_route('/<filename:re:.*\.(eot|svg|ttf|woff|woff2)>')
+def fonts(filename):
+    return bottle.static_file(filename, root=STATIC_FONT_FILE_PATH)
 
 
 def main():
