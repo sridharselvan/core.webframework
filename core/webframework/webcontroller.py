@@ -35,6 +35,8 @@ from core.backend.utils.butils import decode_form_data
 from core.backend.utils.core_utils import common_route, AutoSession
 
 from core.backend.api.user import authenticate_user, create_user
+
+from core.utils.environ import get_user_session_details
 # ----------- END: In-App Imports ---------- #
 
 __all__ = [
@@ -146,8 +148,8 @@ def fonts(filename):
 def main():
     session_opts = {
         'session.type': 'file',
-        'session.cookie_expires': 60 * 10,
-        'session.data_dir': './data',
+        'session.cookie_expires': get_user_session_details()['timeout'],
+        'session.data_dir': './.data',
         'session.auto': True
     }
 
