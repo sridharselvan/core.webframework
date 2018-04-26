@@ -144,19 +144,20 @@ def fonts(filename):
     filename = filename.split('/')[-1]
     return bottle.static_file(filename, root=STATIC_FONT_FILE_PATH)
 
+#
+# App instance
+session_opts = {
+    'session.type': 'file',
+    'session.cookie_expires': get_user_session_details()['timeout'],
+    'session.data_dir': './.data',
+    'session.auto': True
+}
+
+app=beaker.middleware.SessionMiddleware(
+    bottle.app(), session_opts
+)
 
 def main():
-    session_opts = {
-        'session.type': 'file',
-        'session.cookie_expires': get_user_session_details()['timeout'],
-        'session.data_dir': './.data',
-        'session.auto': True
-    }
 
-    bottle.run(
-        app=beaker.middleware.SessionMiddleware(
-            bottle.app(), session_opts
-        ),
-        host='0.0.0.0', port=8080
-    )
+    bottle.run(app=app, host='0.0.0.0', port=8080)
 
