@@ -15,6 +15,7 @@
 
 # ----------- START: Third Party Imports ---------- #
 import bottle
+import argparse
 
 from bottle.ext import beaker
 from bottle import request
@@ -159,5 +160,31 @@ app=beaker.middleware.SessionMiddleware(
 
 def main():
 
-    bottle.run(app=app, host='0.0.0.0', port=8080)
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.RawTextHelpFormatter
+    )
+
+    parser.add_argument(
+        '--port', '-p',
+        required=True,
+        help='Instance port number to be served'
+    )
+
+    cmd_args = parser.parse_args()
+
+    port = cmd_args.port
+
+    if isinstance(port, str):
+        if port.isdigit():
+            port = int(port)
+        else:
+            raise Exception("Invalid port name supplied !")
+
+    elif isinstance(port, int):
+	pass
+
+    else:
+        raise Exception("Invalid port name supplied !")
+
+    bottle.run(app=app, host='0.0.0.0', port=port)
 
