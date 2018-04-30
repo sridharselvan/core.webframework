@@ -30,12 +30,13 @@ from core.backend.constants import (
 from core.backend.config import update_client_config, view_client_config
 from core.scheduler.web import (
     save_scheduler_config, search_scheduled_job,
-    deactivate_scheduled_job, update_scheduled_job
+    deactivate_scheduled_job, update_scheduled_job,
+    check_enabled_valves
 )
 from core.backend.utils.butils import decode_form_data
 from core.backend.utils.core_utils import common_route, AutoSession
 
-from core.backend.api.user import authenticate_user, create_user
+from core.backend.api.user import authenticate_user, create_user, get_user_details, update_user_details
 
 from core.utils.environ import get_user_session_details
 # ----------- END: In-App Imports ---------- #
@@ -88,6 +89,23 @@ def on_create_user(*args, **kwargs):
 def show_client_config():
     return view_client_config()
 
+@app_route('/checkenabledvalves', method='POST')
+@common_route(use_transaction=True)
+def on_check_enabled_valves(session, *args, **kwargs):
+    selected_node = decode_form_data(request.forms)
+    return check_enabled_valves(session, selected_node)
+
+@app_route('/getuserdetails')
+@common_route(use_transaction=True)
+def on_get_user_details(session, *args, **kwargs):
+    user_id = request['beaker.session']['user_id'] or ''
+    return get_user_details(session, user_id)
+
+@app_route('/updateuserdetails', method='POST')
+@common_route(use_transaction=True)
+def on_update_user_details(session, *args, **kwargs):
+    form_data = decode_form_data(request.forms)
+    return update_user_details(session, form_data)
 
 @app_route('/modifyclientconfig', method='POST')
 @common_route()
