@@ -37,9 +37,8 @@ from core.backend.utils.butils import decode_form_data
 from core.backend.utils.core_utils import common_route, AutoSession
 
 from core.backend.api.user import (
-    authenticate_user, create_user, 
-    get_user_details, update_user_details,
-    forgot_password
+    authenticate_user, create_user, get_user_details, 
+    update_user_details, forgot_password_validation, update_password
 )
 
 from core.utils.environ import get_user_session_details
@@ -88,8 +87,8 @@ def on_create_user(*args, **kwargs):
 
         return create_user(auto_session, *args, **kwargs)
 
-@app_route('/forgotpassword', method='POST')
-def on_forgot_password(*args, **kwargs):
+@app_route('/forgotpasswordvalidation', method='POST')
+def on_forgot_password_validation(*args, **kwargs):
     
     with AutoSession() as auto_session:
         form_data = decode_form_data(request.forms)
@@ -97,7 +96,18 @@ def on_forgot_password(*args, **kwargs):
         if form_data:
             kwargs['form_data'] = form_data
         
-        return forgot_password(auto_session, form_data)
+        return forgot_password_validation(auto_session, form_data)
+
+@app_route('/updatepassword', method='POST')
+def on_update_password(*args, **kwargs):
+    
+    with AutoSession() as auto_session:
+        form_data = decode_form_data(request.forms)
+
+        if form_data:
+            kwargs['form_data'] = form_data
+        
+        return update_password(auto_session, form_data)
 
 @app_route('/viewclientconfig')
 @common_route()
