@@ -41,6 +41,8 @@ from core.backend.api.user import (
     update_user_details, forgot_password_validation, update_password
 )
 
+from core.backend.api.dashboard import dashboard
+
 from core.utils.environ import get_user_session_details
 # ----------- END: In-App Imports ---------- #
 
@@ -148,6 +150,11 @@ def logout_user():
 def on_scheduler_config(session, *args, **kwargs):
     form_data = decode_form_data(request.forms)
     return save_scheduler_config(session, form_data)
+
+@app_route('/dashboard', method='GET')
+@common_route(use_transaction=True)
+def on_dashboard(session, *args, **kwargs):
+    return dashboard(session)
 
 @app_route('/searchscheduledjob', method='POST')
 @common_route(use_transaction=True)
