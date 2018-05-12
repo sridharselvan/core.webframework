@@ -37,7 +37,7 @@ from core.backend.utils.butils import decode_form_data
 from core.backend.utils.core_utils import common_route, AutoSession
 
 from core.backend.api.user import (
-    authenticate_user, create_user, get_user_details, 
+    authenticate_user, create_user, get_user_details,
     update_user_details, forgot_password_validation, update_password
 )
 
@@ -49,9 +49,6 @@ from core.utils.environ import get_user_session_details
 __all__ = [
     # All public symbols go here.
 ]
-
-
-#app = bottle.Bottle()
 
 app_route = bottle.route
 
@@ -91,24 +88,24 @@ def on_create_user(*args, **kwargs):
 
 @app_route('/forgotpasswordvalidation', method='POST')
 def on_forgot_password_validation(*args, **kwargs):
-    
+
     with AutoSession() as auto_session:
         form_data = decode_form_data(request.forms)
 
         if form_data:
             kwargs['form_data'] = form_data
-        
+
         return forgot_password_validation(auto_session, form_data)
 
 @app_route('/updatepassword', method='POST')
 def on_update_password(*args, **kwargs):
-    
+
     with AutoSession() as auto_session:
         form_data = decode_form_data(request.forms)
 
         if form_data:
             kwargs['form_data'] = form_data
-        
+
         return update_password(auto_session, form_data)
 
 @app_route('/viewclientconfig')
@@ -195,18 +192,6 @@ def fonts(filename):
     filename = filename.split('/')[-1]
     return bottle.static_file(filename, root=STATIC_FONT_FILE_PATH)
 
-#
-# App instance
-session_opts = {
-    'session.type': 'file',
-    'session.cookie_expires': get_user_session_details()['timeout'],
-    'session.data_dir': './.data',
-    'session.auto': True
-}
-
-app=beaker.middleware.SessionMiddleware(
-    bottle.app(), session_opts
-)
 
 def main():
 
@@ -231,10 +216,24 @@ def main():
             raise Exception("Invalid port name supplied !")
 
     elif isinstance(port, int):
-	pass
+        pass
 
     else:
         raise Exception("Invalid port name supplied !")
 
-    bottle.run(app=app, host='0.0.0.0', port=port)
+    #
+    # App instance
+    session_opts = {
+        'session.type': 'file',
+        'session.cookie_expires': get_user_session_details()['timeout'],
+        'session.data_dir': './.data',
+        'session.auto': True
+    }
 
+    app = bottle.app()
+
+    bottle.run(
+        app=beaker.middleware.SessionMiddleware(app, session_opts),
+        host='0.0.0.0',
+        port=port
+    )
