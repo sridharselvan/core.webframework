@@ -31,7 +31,7 @@ from core.backend.config import update_client_config, view_client_config
 from core.scheduler.web import (
     save_scheduler_config, search_scheduled_job,
     deactivate_scheduled_job, update_scheduled_job,
-    check_enabled_valves
+    check_enabled_valves, get_sms_config, update_sms_config
 )
 from core.backend.utils.butils import decode_form_data
 from core.backend.utils.core_utils import common_route, AutoSession
@@ -118,6 +118,17 @@ def show_client_config():
 def on_check_enabled_valves(session, *args, **kwargs):
     selected_node = decode_form_data(request.forms)
     return check_enabled_valves(session, selected_node)
+
+@app_route('/getsmsconfig', method='GET')
+@common_route(use_transaction=True)
+def on_get_sms_config(session, *args, **kwargs):
+    return get_sms_config(session)
+
+@app_route('/updatesmsconfig', method='POST')
+@common_route(use_transaction=True)
+def on_update_sms_config(session, *args, **kwargs):
+    sms_data = decode_form_data(request.forms)
+    return update_sms_config(session, sms_data)
 
 @app_route('/getuserdetails')
 @common_route(use_transaction=True)
