@@ -41,7 +41,7 @@ from core.backend.api.user import (
     update_user_details, forgot_password_validation, update_password
 )
 
-from core.backend.api.dashboard import dashboard
+from core.backend.api.dashboard import dashboard, delete_failed_sms
 
 from core.utils.environ import get_user_session_details
 # ----------- END: In-App Imports ---------- #
@@ -163,6 +163,12 @@ def on_scheduler_config(session, *args, **kwargs):
 @common_route(use_transaction=True)
 def on_dashboard(session, *args, **kwargs):
     return dashboard(session)
+
+@app_route('/deletefailedsms', method='POST')
+@common_route(use_transaction=True)
+def on_delete_failed_sms(session, *args, **kwargs):
+    form_data = decode_form_data(request.forms)
+    return delete_failed_sms(session, form_data)
 
 @app_route('/searchscheduledjob', method='POST')
 @common_route(use_transaction=True)
